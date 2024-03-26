@@ -1,0 +1,27 @@
+services:
+  postgres:
+    image: postgres:latest
+    container_name: my-postgres-container
+    environment:
+      POSTGRES_DB: truckdb
+      POSTGRES_USER: main
+      POSTGRES_PASSWORD: password
+    ports:
+      - "5432:5432"
+    volumes:
+      - ./schema.sql:/docker-entrypoint-initdb.d/init.sql
+
+  express-app:
+    build:
+      context: ./server
+      dockerfile: Dockerfile
+    container_name: my-express-app
+    volumes:
+      - ./server:/usr/src/app
+    environment:
+      PORT: 8080
+      HOST: postgres
+    ports:
+      - "8080:8080"
+    depends_on:
+      - postgres
